@@ -1,0 +1,1282 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="FlashFOOD - Velocidad que se saborea.">
+<title>FlashFOOD | Plataforma de pedidos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+
+<style>
+:root{
+  --green:#2f7138;--green-dark:#1f5428;--green-light:#4b914f;--green-soft:#e9f4ea;
+  --black:#111;--white:#fff;--gray-50:#f8f9f8;--gray-100:#f1f3f1;--gray-200:#e3e6e3;
+  --gray-300:#d4d8d4;--gray-400:#8b918b;--gray-600:#5d635d;--danger:#b42318;
+  --warning:#c98200;--shadow-sm:0 8px 25px rgba(0,0,0,.06);--shadow-md:0 20px 50px rgba(0,0,0,.1);
+  --shadow-lg:0 35px 90px rgba(0,0,0,.16);--radius-md:20px;--radius-lg:28px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:Inter,sans-serif;color:var(--black);background:#fff;line-height:1.6;overflow-x:hidden}
+body.locked{overflow:hidden}
+button,input,select,textarea{font:inherit}
+button{border:0}
+a{text-decoration:none;color:inherit}
+img{max-width:100%;display:block}
+.container{width:min(calc(100% - 40px),1200px);margin:auto}
+.section{padding:100px 0}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;padding:7px 12px;border-radius:100px;background:var(--green-soft);color:var(--green);font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--green)}
+h1,h2,h3,h4{letter-spacing:-.04em}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:46px;padding:0 18px;border-radius:13px;border:1px solid transparent;font-weight:700;cursor:pointer;transition:.35s}
+.btn:hover{transform:translateY(-2px)}
+.btn-primary{background:var(--green);color:#fff;box-shadow:0 12px 25px rgba(47,113,56,.2)}
+.btn-primary:hover{background:var(--green-dark)}
+.btn-secondary{background:#fff;border-color:var(--gray-200)}
+.btn-danger{background:#fff;border-color:#efc2be;color:var(--danger)}
+.btn-soft{background:var(--green-soft);color:var(--green)}
+.navbar{position:fixed;top:0;left:0;width:100%;z-index:1000;padding:18px 0;transition:.4s}
+.navbar.scrolled{padding:11px 0;background:rgba(255,255,255,.88);backdrop-filter:blur(16px);box-shadow:0 8px 30px rgba(0,0,0,.06)}
+.nav-wrap{display:flex;align-items:center;justify-content:space-between;gap:20px}
+.logo{display:flex;align-items:center;gap:10px;font-size:1.2rem;font-weight:800}
+.logo-mark{width:38px;height:38px;border-radius:12px;background:var(--green);color:#fff;display:grid;place-items:center}
+.logo span{color:var(--green)}
+.nav-links{display:flex;gap:24px;list-style:none}
+.nav-links a{font-size:.87rem;color:var(--gray-600);font-weight:600;transition:.25s}
+.nav-links a:hover{color:var(--green)}
+.nav-actions{display:flex;align-items:center;gap:9px}
+.cart-btn,.account-btn,.menu-toggle{position:relative;width:46px;height:46px;border-radius:13px;background:var(--gray-100);cursor:pointer;display:grid;place-items:center}
+.cart-count{position:absolute;right:-3px;top:-4px;min-width:20px;height:20px;padding:0 5px;border-radius:999px;background:var(--green);color:#fff;font-size:.65rem;font-weight:800;display:grid;place-items:center}
+.account-btn{width:auto;padding:0 12px;display:flex;gap:8px}
+.account-btn .account-name{max-width:105px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.78rem;font-weight:700}
+.menu-toggle{display:none}
+.hero{min-height:78vh;padding:150px 0 70px;background:radial-gradient(circle at 80% 20%,rgba(47,113,56,.12),transparent 35%),radial-gradient(circle at 15% 75%,rgba(47,113,56,.07),transparent 30%),#fff}
+.hero-grid{display:grid;grid-template-columns:1fr .85fr;gap:60px;align-items:center}
+.hero h1{font-size:clamp(3.1rem,7vw,6.2rem);line-height:.94;margin:20px 0}
+.hero h1 span{color:var(--green)}
+.hero p{max-width:620px;color:var(--gray-600);font-size:1.08rem;margin-bottom:28px}
+.hero-card{border-radius:28px;overflow:hidden;box-shadow:var(--shadow-lg);background:#fff}
+.hero-card img{height:420px;width:100%;object-fit:cover}
+.info-strip{padding:26px 0;border-bottom:1px solid var(--gray-200);border-top:1px solid var(--gray-200)}
+.info-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}
+.info-item{background:var(--green-soft);border-radius:18px;padding:18px;display:flex;gap:12px;align-items:flex-start}
+.info-item i{color:var(--green)}.info-item strong{display:block;font-size:.9rem}.info-item span{color:var(--gray-600);font-size:.75rem}
+.menu-section{background:var(--gray-50)}
+.section-head{display:flex;justify-content:space-between;align-items:end;gap:20px;margin-bottom:30px}
+.section-head h2{font-size:clamp(2.2rem,5vw,4rem);line-height:1}
+.section-head p{max-width:520px;color:var(--gray-600)}
+.categories{display:flex;gap:10px;overflow:auto;padding-bottom:10px;margin-bottom:24px}
+.category{border:1px solid var(--gray-200);background:#fff;color:var(--gray-600);padding:9px 14px;border-radius:999px;cursor:pointer;white-space:nowrap;font-weight:700;font-size:.82rem}
+.category.active{background:var(--green);border-color:var(--green);color:#fff}
+.product-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.product-card{background:#fff;border:1px solid var(--gray-200);border-radius:20px;overflow:hidden;transition:.4s}
+.product-card:hover{transform:translateY(-7px);box-shadow:var(--shadow-md);border-color:rgba(47,113,56,.3)}
+.product-image{height:220px;position:relative;overflow:hidden}
+.product-image img{width:100%;height:100%;object-fit:cover;transition:transform .5s}
+.product-card:hover img{transform:scale(1.05)}
+.badge{position:absolute;left:14px;top:14px;background:#fff;color:var(--green);padding:6px 10px;border-radius:999px;font-size:.68rem;font-weight:800;box-shadow:var(--shadow-sm)}
+.product-body{padding:18px}
+.product-body h3{font-size:1.05rem;margin-bottom:6px}
+.product-body p{font-size:.82rem;color:var(--gray-600);min-height:42px}
+.product-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:15px}
+.price{color:var(--green);font-weight:800;font-size:1rem}
+.add-btn{border:0;background:var(--green);color:#fff;border-radius:12px;padding:10px 13px;cursor:pointer;font-weight:800;display:inline-flex;align-items:center;gap:6px}
+.add-btn:hover{background:var(--green-dark)}
+.section-muted{background:var(--gray-50)}
+.feature-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.feature-card{border:1px solid var(--gray-200);border-radius:20px;padding:28px;background:#fff;transition:.35s}
+.feature-card:hover{transform:translateY(-6px);box-shadow:var(--shadow-md)}
+.feature-icon{width:48px;height:48px;display:grid;place-items:center;border-radius:14px;background:var(--green-soft);color:var(--green);margin-bottom:18px}
+.feature-card p{color:var(--gray-600);font-size:.88rem}
+.cta{margin:90px auto;width:min(calc(100% - 40px),1200px);padding:80px 30px;border-radius:30px;background:var(--green-dark);color:#fff;text-align:center;position:relative;overflow:hidden}
+.cta:before{content:"";position:absolute;width:300px;height:300px;border-radius:50%;background:rgba(255,255,255,.05);left:-100px;top:-120px;filter:blur(8px)}
+.cta h2{position:relative;font-size:clamp(2.5rem,6vw,5rem);line-height:.98;margin-bottom:15px}.cta p{position:relative;max-width:600px;margin:0 auto 25px;color:rgba(255,255,255,.7)}
+footer{padding:60px 0 25px;border-top:1px solid var(--gray-200)}
+.footer{display:flex;justify-content:space-between;gap:30px;align-items:center}.muted{color:var(--gray-600);font-size:.8rem}
+
+.drawer-backdrop,.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.44);z-index:1090;opacity:0;visibility:hidden;transition:.3s}
+.drawer-backdrop.open,.modal-backdrop.open{opacity:1;visibility:visible}
+.drawer{position:fixed;right:0;top:0;height:100%;width:min(430px,100%);background:#fff;z-index:1100;transform:translateX(100%);transition:.45s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column}
+.drawer.open{transform:translateX(0)}
+.drawer-head{display:flex;align-items:center;justify-content:space-between;padding:22px;border-bottom:1px solid var(--gray-200)}
+.close-btn{width:40px;height:40px;border-radius:11px;background:var(--gray-100);cursor:pointer}
+.cart-items{padding:18px;overflow:auto;flex:1;display:grid;align-content:start;gap:12px}
+.empty{padding:40px 10px;text-align:center;color:var(--gray-600)}
+.cart-item{display:grid;grid-template-columns:72px 1fr auto;gap:12px;align-items:center;border:1px solid var(--gray-200);padding:10px;border-radius:16px}
+.cart-item img{width:72px;height:72px;border-radius:12px;object-fit:cover}
+.cart-item h4{font-size:.82rem;margin-bottom:4px}
+.cart-item .unit{font-size:.72rem;color:var(--gray-400)}
+.qty{display:flex;align-items:center;gap:6px;margin-top:8px}
+.qty button{width:28px;height:28px;border:1px solid var(--gray-200);background:#fff;border-radius:8px;cursor:pointer;font-weight:800}
+.qty span{min-width:20px;text-align:center;font-size:.8rem;font-weight:800}
+.remove{border:0;background:transparent;color:var(--danger);font-size:.72rem;cursor:pointer;margin-top:6px}
+.drawer-foot{padding:18px;border-top:1px solid var(--gray-200);display:grid;gap:12px}
+.total-row{display:flex;justify-content:space-between;font-weight:800}.total-value{color:var(--green);font-size:1.1rem}
+.checkout{width:100%}
+
+.modal{position:fixed;left:50%;top:50%;transform:translate(-50%,-48%) scale(.97);width:min(520px,calc(100% - 28px));max-height:90vh;overflow:auto;background:#fff;border-radius:24px;z-index:1200;box-shadow:var(--shadow-lg);opacity:0;visibility:hidden;transition:.3s}
+.modal.open{opacity:1;visibility:visible;transform:translate(-50%,-50%) scale(1)}
+.modal-head{display:flex;align-items:center;justify-content:space-between;padding:22px 24px;border-bottom:1px solid var(--gray-200)}
+.modal-body{padding:24px}
+.tabs{display:grid;grid-template-columns:1fr 1fr;background:var(--gray-100);padding:4px;border-radius:12px;margin-bottom:22px}
+.tab{padding:10px;border-radius:9px;background:transparent;cursor:pointer;font-weight:700;color:var(--gray-600)}
+.tab.active{background:#fff;color:var(--green);box-shadow:var(--shadow-sm)}
+.form{display:grid;gap:14px}
+.field{display:grid;gap:6px}.field label{font-size:.75rem;font-weight:700}.field input,.field select,.field textarea{width:100%;padding:12px 13px;border:1px solid var(--gray-200);border-radius:12px;outline:0;background:#fff}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--green);box-shadow:0 0 0 4px rgba(47,113,56,.08)}
+.form-note{font-size:.75rem;color:var(--gray-400)}
+.form-message{font-size:.8rem;display:none;padding:10px 12px;border-radius:10px}
+.form-message.error{display:block;background:#fff1ef;color:var(--danger)}
+.form-message.success{display:block;background:var(--green-soft);color:var(--green)}
+.account-panel{position:relative;display:none}.account-panel.show{display:block}
+.account-menu{display:grid;gap:10px}.account-menu button{padding:13px;border-radius:12px;background:var(--gray-50);text-align:left;cursor:pointer;font-weight:700}.account-menu button:hover{background:var(--green-soft);color:var(--green)}
+.profile-summary{display:flex;align-items:center;gap:12px;padding:14px;background:var(--green-soft);border-radius:16px;margin-bottom:16px}.avatar{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:var(--green);color:#fff;font-weight:800}
+
+.admin-page{display:none;background:var(--gray-50);min-height:100vh;padding:120px 0 80px}
+.admin-page.active{display:block}
+.admin-top{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;margin-bottom:28px}
+.admin-top h1{font-size:clamp(2.2rem,5vw,4rem);line-height:1}
+.admin-top p{color:var(--gray-600);margin-top:10px;max-width:680px}
+.status-pill{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;font-size:.76rem;font-weight:800}
+.status-open{background:var(--green-soft);color:var(--green)}.status-closed{background:#fff1ef;color:var(--danger)}
+.admin-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:20px}
+.admin-card{background:#fff;border:1px solid var(--gray-200);border-radius:20px;padding:24px}
+.admin-card h3{margin-bottom:6px;font-size:1.2rem}.admin-card>p{color:var(--gray-600);font-size:.82rem;margin-bottom:20px}
+.settings-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.hours{display:grid;gap:10px}
+.hour-row{display:grid;grid-template-columns:110px 1fr auto 1fr;gap:10px;align-items:center}
+.hour-row label{font-size:.8rem;font-weight:700}.hour-row input{padding:10px;border:1px solid var(--gray-200);border-radius:10px}.dash{color:var(--gray-400)}
+.switch{position:relative;display:inline-flex;align-items:center;width:44px;height:26px}.switch input{opacity:0;width:0;height:0}.slider{position:absolute;inset:0;background:var(--gray-300);border-radius:20px;cursor:pointer;transition:.25s}.slider:before{content:"";position:absolute;width:20px;height:20px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.25s;box-shadow:0 2px 6px rgba(0,0,0,.12)}.switch input:checked+.slider{background:var(--green)}.switch input:checked+.slider:before{transform:translateX(18px)}
+.local-preview{display:grid;gap:10px;margin-bottom:18px}.preview-row{display:flex;justify-content:space-between;gap:15px;padding:10px 0;border-bottom:1px solid var(--gray-200);font-size:.82rem}.preview-row span:first-child{color:var(--gray-400)}.preview-row strong{text-align:right}
+.admin-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+.toast{position:fixed;left:50%;bottom:25px;transform:translate(-50%,20px);background:#111;color:#fff;padding:12px 16px;border-radius:12px;font-size:.8rem;z-index:1500;opacity:0;pointer-events:none;transition:.35s}.toast.show{opacity:1;transform:translate(-50%,0)}
+.mobile-admin-link{display:none}
+
+@media(max-width:1050px){.nav-links{gap:14px}.nav-links li:nth-child(n+4){display:none}}
+@media(max-width:950px){.nav-links,.nav-actions .btn{display:none}.menu-toggle{display:grid}.nav-actions{margin-left:auto}.hero-grid{grid-template-columns:1fr}.hero-card{max-width:700px}.product-grid{grid-template-columns:repeat(2,1fr)}.feature-grid{grid-template-columns:1fr 1fr}.admin-grid{grid-template-columns:1fr}}
+@media(max-width:650px){
+  .container{width:min(calc(100% - 28px),1200px)}.section{padding:75px 0}.hero{padding-top:125px}.hero h1{font-size:clamp(3rem,14vw,4.4rem)}
+  .product-grid,.feature-grid,.info-grid{grid-template-columns:1fr}.product-image{height:235px}.section-head{align-items:flex-start;flex-direction:column}
+  .cta{width:calc(100% - 28px);padding:65px 22px}.footer{flex-direction:column;align-items:flex-start}
+  .admin-top{flex-direction:column}.settings-grid{grid-template-columns:1fr}.hour-row{grid-template-columns:1fr 1fr auto 1fr}.hour-row label{grid-column:1/-1}.mobile-admin-link{display:block}
+}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+
+/* ============================================================
+   FUNCIONES AVANZADAS FLASHFOOD
+============================================================ */
+.advanced-section{background:#fff}
+.advanced-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.advanced-card{position:relative;background:#fff;border:1px solid var(--gray-200);border-radius:20px;padding:25px;transition:.35s;overflow:hidden}
+.advanced-card:hover{transform:translateY(-6px);box-shadow:var(--shadow-md);border-color:rgba(47,113,56,.3)}
+.advanced-card .feature-icon{margin-bottom:16px}
+.advanced-card h3{font-size:1.05rem;margin-bottom:7px}
+.advanced-card p{font-size:.8rem;color:var(--gray-600)}
+.flow-section{background:var(--gray-50)}
+.flow-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;position:relative}
+.flow-phase{background:#fff;border:1px solid var(--gray-200);border-radius:20px;padding:22px;min-height:310px;position:relative;overflow:hidden}
+.flow-phase:after{content:"";position:absolute;right:-30px;bottom:-35px;width:120px;height:120px;border-radius:50%;background:var(--green-soft)}
+.flow-number{width:42px;height:42px;border-radius:12px;background:var(--green);color:#fff;display:grid;place-items:center;font-size:.8rem;font-weight:800;margin-bottom:16px}
+.flow-phase h3{font-size:1rem;margin-bottom:8px}
+.flow-phase p{font-size:.78rem;color:var(--gray-600);margin-bottom:14px}
+.flow-steps{list-style:none;display:grid;gap:8px;position:relative;z-index:2}
+.flow-steps li{display:flex;align-items:flex-start;gap:8px;font-size:.74rem;font-weight:600}
+.flow-steps li i{width:15px;height:15px;color:var(--green);flex:0 0 15px;margin-top:2px}
+.flow-arrow{display:grid;place-items:center;color:var(--green);font-size:1.2rem}
+.live-panel{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:20px}
+.live-card{background:#fff;border:1px solid var(--gray-200);border-radius:20px;padding:22px}
+.live-status{display:inline-flex;align-items:center;gap:8px;padding:7px 10px;border-radius:999px;background:var(--green-soft);color:var(--green);font-size:.72rem;font-weight:800}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 0 5px rgba(47,113,56,.08)}
+.timeline{display:grid;gap:10px;margin-top:15px}
+.timeline-row{display:grid;grid-template-columns:90px 1fr auto;gap:10px;align-items:center;padding:10px 12px;border-radius:12px;background:var(--gray-50)}
+.timeline-row strong{font-size:.75rem}.timeline-row span{font-size:.72rem;color:var(--gray-600)}.mini-badge{padding:4px 8px;border-radius:999px;font-size:.62rem;font-weight:800;background:var(--green-soft);color:var(--green)}
+.admin-tools-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+.admin-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:15px 0}
+.admin-kpi{padding:14px;background:var(--gray-50);border-radius:14px}
+.admin-kpi strong{display:block;font-size:1.05rem}.admin-kpi span{display:block;font-size:.68rem;color:var(--gray-400)}
+.admin-table{width:100%;border-collapse:collapse;font-size:.72rem}.admin-table th,.admin-table td{padding:10px;border-bottom:1px solid var(--gray-200);text-align:left}.admin-table th{color:var(--gray-400);font-weight:700}
+.stock-list,.promo-list,.role-list,.payment-list{display:grid;gap:10px}
+.list-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px;background:var(--gray-50);border-radius:13px}
+.list-row strong{font-size:.78rem}.list-row span{font-size:.7rem;color:var(--gray-600)}
+.stock-badge{padding:5px 8px;border-radius:999px;font-size:.62rem;font-weight:800}.stock-ok{background:var(--green-soft);color:var(--green)}.stock-low{background:#fff6df;color:var(--warning)}.stock-out{background:#fff1ef;color:var(--danger)}
+.admin-section-title{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:14px}
+.admin-section-title h3{margin:0}
+.admin-locked{opacity:.65}
+@media(max-width:950px){.advanced-grid{grid-template-columns:1fr 1fr}.flow-grid{grid-template-columns:1fr 1fr}.live-panel,.admin-tools-grid{grid-template-columns:1fr}}
+@media(max-width:650px){.advanced-grid,.flow-grid,.admin-tools-grid{grid-template-columns:1fr}.flow-phase{min-height:auto}.admin-kpis{grid-template-columns:1fr 1fr}.timeline-row{grid-template-columns:70px 1fr}.timeline-row .mini-badge{grid-column:2}}
+
+</style>
+</head>
+
+<body>
+
+<header class="navbar" id="navbar">
+  <div class="container nav-wrap">
+    <a class="logo" href="#inicio" id="brandLink">
+      <div class="logo-mark"><i data-lucide="zap"></i></div>
+      <div>Flash<span>FOOD</span></div>
+    </a>
+
+    <nav>
+      <ul class="nav-links">
+        <li><a href="#inicio">Inicio</a></li>
+        <li><a href="#menu">Menú</a></li>
+        <li><a href="#como-funciona">Cómo funciona</a></li>
+        <li><a href="#beneficios">Beneficios</a></li>
+        <li><a href="#contacto">Contacto</a></li>
+      </ul>
+    </nav>
+
+    <div class="nav-actions">
+      <button class="cart-btn" id="cartOpen" aria-label="Abrir carrito">
+        <i data-lucide="shopping-cart"></i>
+        <span class="cart-count" id="cartCount">0</span>
+      </button>
+
+      <button class="account-btn" id="accountOpen" aria-label="Abrir cuenta">
+        <i data-lucide="user-round"></i>
+        <span class="account-name" id="accountName">Ingresar</span>
+      </button>
+
+      <a class="btn btn-primary" href="#menu">Ver menú</a>
+      <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú móvil">
+        <i data-lucide="menu"></i>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="publicApp">
+
+<section class="hero" id="inicio">
+  <div class="container hero-grid">
+    <div>
+      <span class="eyebrow"><span class="dot"></span> Velocidad que se saborea</span>
+      <h1>Tu comida.<br><span>Más rápida.</span><br>Más fácil.</h1>
+      <p>Explora el menú, crea tu cuenta, agrega tus favoritos y controla tu pedido en una experiencia diseñada para que pedir comida sea sencillo.</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <a class="btn btn-primary" href="#menu">Explorar menú <i data-lucide="arrow-down"></i></a>
+        <button class="btn btn-secondary" id="heroAccount">Crear cuenta</button>
+      </div>
+    </div>
+    <div class="hero-card">
+      <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=1200&q=85" alt="Hamburguesa">
+    </div>
+  </div>
+</section>
+
+<section class="info-strip">
+  <div class="container info-grid">
+    <div class="info-item"><i data-lucide="zap"></i><div><strong>Pedidos rápidos</strong><span>Compra en pocos pasos.</span></div></div>
+    <div class="info-item"><i data-lucide="credit-card"></i><div><strong>Precios en COP</strong><span>Valores mostrados en pesos colombianos.</span></div></div>
+    <div class="info-item"><i data-lucide="shopping-cart"></i><div><strong>Carrito interactivo</strong><span>Agrega, quita y cambia cantidades.</span></div></div>
+  </div>
+</section>
+
+<section class="section menu-section" id="menu">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <span class="eyebrow"><span class="dot"></span> Menú FlashFOOD</span>
+        <h2>Elige algo delicioso.</h2>
+      </div>
+      <p>Todos los precios están expresados en pesos colombianos (COP). Puedes modificar cantidades desde el carrito.</p>
+    </div>
+    <div class="categories" id="categories"></div>
+    <div class="product-grid" id="productGrid"></div>
+  </div>
+</section>
+
+<section class="section" id="como-funciona">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <span class="eyebrow"><span class="dot"></span> Cómo funciona</span>
+        <h2>Compra sin complicarte.</h2>
+      </div>
+      <p>Regístrate, elige productos, ajusta las cantidades y continúa al pago. La civilización ha conseguido automatizar una parte de la cena.</p>
+    </div>
+    <div class="feature-grid">
+      <div class="feature-card"><div class="feature-icon"><i data-lucide="user-plus"></i></div><h3>01. Crea tu cuenta</h3><p>Regístrate con tus datos y guarda tu sesión en este prototipo.</p></div>
+      <div class="feature-card"><div class="feature-icon"><i data-lucide="shopping-cart"></i></div><h3>02. Arma tu pedido</h3><p>Agrega productos y controla cantidades en tiempo real.</p></div>
+      <div class="feature-card"><div class="feature-icon"><i data-lucide="check-circle-2"></i></div><h3>03. Continúa al pago</h3><p>La demo valida tu cuenta antes de llevarte al siguiente paso.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section section-muted" id="beneficios">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <span class="eyebrow"><span class="dot"></span> Beneficios</span>
+        <h2>Una experiencia hecha para ti.</h2>
+      </div>
+    </div>
+    <div class="info-grid">
+      <div class="info-item"><i data-lucide="clock-3"></i><div><strong>Rapidez</strong><span>Menos pasos innecesarios durante la compra.</span></div></div>
+      <div class="info-item"><i data-lucide="shield-check"></i><div><strong>Claridad</strong><span>Consulta precios, cantidades y total en un solo lugar.</span></div></div>
+      <div class="info-item"><i data-lucide="smartphone"></i><div><strong>Responsive</strong><span>Funciona en móvil, tablet y escritorio.</span></div></div>
+    </div>
+  </div>
+</section>
+
+
+<section class="cta" id="contacto">
+  <h2>Tu próxima comida está a un clic.</h2>
+  <p>Explora el menú FlashFOOD y arma tu pedido con una experiencia rápida y sencilla.</p>
+  <a class="btn" style="background:#fff;color:var(--green)" href="#menu">Ver menú</a>
+</section>
+
+</main>
+
+<!-- SUPER ADMINISTRADOR -->
+<section class="admin-page" id="superAdminPage">
+  <div class="container">
+    <div class="admin-top">
+      <div>
+        <span class="eyebrow"><span class="dot"></span> Super administrador</span>
+        <h1>Configuración y control del negocio.</h1>
+        <p>Administra horarios, datos del local y el estado operativo de FlashFOOD desde un panel separado del flujo de clientes.</p>
+      </div>
+      <div>
+        <span class="status-pill status-open" id="businessStatus"><span class="dot"></span> Negocio abierto</span>
+      </div>
+    </div>
+
+    <div class="admin-grid">
+      <div class="admin-card">
+        <h3>Horarios de negocio</h3>
+        <p>Configura el horario de apertura y cierre para cada día. Desactiva un día cuando el local permanezca cerrado.</p>
+
+        <div class="hours" id="hoursForm"></div>
+
+        <div class="admin-actions">
+          <button class="btn btn-primary" id="saveHours"><i data-lucide="save"></i> Guardar horarios</button>
+        </div>
+      </div>
+
+      <div class="admin-card">
+        <h3>Datos del local</h3>
+        <p>Información pública que puede utilizar la aplicación para mostrar el comercio.</p>
+
+        <form class="form" id="businessForm">
+          <div class="settings-grid">
+            <div class="field"><label for="businessName">Nombre del local</label><input id="businessName" required></div>
+            <div class="field"><label for="businessPhone">Teléfono</label><input id="businessPhone" required></div>
+          </div>
+
+          <div class="field"><label for="businessAddress">Dirección</label><input id="businessAddress" required></div>
+          <div class="settings-grid">
+            <div class="field"><label for="businessCity">Ciudad</label><input id="businessCity" required></div>
+            <div class="field"><label for="businessEmail">Correo</label><input id="businessEmail" type="email" required></div>
+          </div>
+          <div class="field"><label for="businessDescription">Descripción</label><textarea id="businessDescription" rows="4"></textarea></div>
+
+          <div class="admin-actions">
+            <button class="btn btn-primary" type="submit"><i data-lucide="save"></i> Guardar datos</button>
+            <button class="btn btn-secondary" type="button" id="toggleBusiness"><i data-lucide="power"></i> Cambiar estado</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="admin-card">
+        <h3>Vista pública del negocio</h3>
+        <p>Así quedan reflejados los datos configurados.</p>
+        <div class="local-preview">
+          <div class="preview-row"><span>Local</span><strong id="previewName">FlashFOOD</strong></div>
+          <div class="preview-row"><span>Dirección</span><strong id="previewAddress">Avenida Carrera 92 #52A-37</strong></div>
+          <div class="preview-row"><span>Ciudad</span><strong id="previewCity">Bogotá</strong></div>
+          <div class="preview-row"><span>Teléfono</span><strong id="previewPhone">+57 300 000 0000</strong></div>
+          <div class="preview-row"><span>Correo</span><strong id="previewEmail">contacto@flashfood.co</strong></div>
+        </div>
+        <div class="admin-actions">
+          <button class="btn btn-soft" id="returnPublic"><i data-lucide="store"></i> Volver a la tienda</button>
+        </div>
+      </div>
+
+      <div class="admin-card">
+        <h3>Control operativo</h3>
+        <p>Estado general del negocio y resumen de configuración.</p>
+        <div class="info-grid" style="grid-template-columns:1fr">
+          <div class="info-item"><i data-lucide="store"></i><div><strong id="controlBusinessName">FlashFOOD</strong><span>Nombre comercial</span></div></div>
+          <div class="info-item"><i data-lucide="calendar-clock"></i><div><strong id="controlSchedule">Configurado</strong><span>Horarios de atención</span></div></div>
+          <div class="info-item"><i data-lucide="shield-check"></i><div><strong>Super administrador</strong><span>Acceso de configuración habilitado</span></div></div>
+        </div>
+
+      <div class="admin-card" style="grid-column:1/-1">
+        <div class="admin-section-title">
+          <div>
+            <h3>Gestión integral</h3>
+            <p>Herramientas administrativas que ya no se muestran al cliente y quedan bajo control del Super Administrador.</p>
+          </div>
+          <span class="live-status"><span class="live-dot"></span> Solo administración</span>
+        </div>
+        <div class="advanced-grid admin-advanced-grid">
+          <article class="advanced-card"><div class="feature-icon"><i data-lucide="credit-card"></i></div><h3>Pasarelas de pago</h3><p>Centraliza métodos de pago y estados de transacción para completar el checkout.</p></article>
+          <article class="advanced-card"><div class="feature-icon"><i data-lucide="map-pinned"></i></div><h3>Zonas de reparto</h3><p>Define sectores de cobertura para organizar entregas y capacidad operativa.</p></article>
+          <article class="advanced-card"><div class="feature-icon"><i data-lucide="utensils"></i></div><h3>Menú digital</h3><p>Administra platillos, ingredientes, categorías, precios y disponibilidad.</p></article>
+          <article class="advanced-card"><div class="feature-icon"><i data-lucide="package-check"></i></div><h3>Control del stock</h3><p>Consulta existencias y detecta productos con inventario bajo o agotado.</p></article>
+          <article class="advanced-card"><div class="feature-icon"><i data-lucide="badge-percent"></i></div><h3>Promociones</h3><p>Crea descuentos y ofertas para impulsar productos y temporadas específicas.</p></article>
+          <article class="advanced-card"><div class="feature-icon"><i data-lucide="radio"></i></div><h3>Operación en vivo</h3><p>Monitorea pedidos, tiempos, estados y responsables durante toda la operación.</p></article>
+          <article class="advanced-card"><div class="feature-icon"><i data-lucide="users-round"></i></div><h3>Roles y permisos</h3><p>Asigna responsabilidades a administración, caja, cocina y reparto.</p></article>
+          <article class="advanced-card"><div class="feature-icon"><i data-lucide="rotate-ccw"></i></div><h3>Cancelaciones y reembolsos</h3><p>Gestiona excepciones del pedido con seguimiento del estado y devolución.</p></article>
+          <article class="advanced-card"><div class="feature-icon"><i data-lucide="chart-no-axes-combined"></i></div><h3>Facturación y estadísticas</h3><p>Genera reportes de ventas, identifica platillos populares y consulta la base de clientes.</p></article>
+        </div>
+      </div>
+
+      <div class="admin-card" style="grid-column:1/-1">
+        <div class="admin-section-title">
+          <div>
+            <h3>Operaciones y gestión de pedidos</h3>
+            <p>Monitoreo en vivo, roles operativos, cancelaciones y reembolsos.</p>
+          </div>
+          <span class="live-status"><span class="live-dot"></span> Operación en vivo</span>
+        </div>
+
+        <div class="admin-kpis">
+          <div class="admin-kpi"><strong id="liveOrdersCount">12</strong><span>Pedidos activos</span></div>
+          <div class="admin-kpi"><strong>4</strong><span>Cocina / caja</span></div>
+          <div class="admin-kpi"><strong>7</strong><span>Repartidores</span></div>
+        </div>
+
+        <div class="live-panel">
+          <div class="live-card">
+            <strong>Pedidos en vivo</strong>
+            <div class="timeline">
+              <div class="timeline-row"><strong>#1048</strong><span>Validación · Hamburguesa + bebida</span><span class="mini-badge">Aceptar</span></div>
+              <div class="timeline-row"><strong>#1047</strong><span>Cocina · Ensalada y papas</span><span class="mini-badge">15 min</span></div>
+              <div class="timeline-row"><strong>#1046</strong><span>Despacho · Ruta Norte</span><span class="mini-badge">En camino</span></div>
+            </div>
+          </div>
+
+          <div class="live-card">
+            <strong>Roles operativos</strong>
+            <div class="role-list" style="margin-top:15px">
+              <div class="list-row"><strong>Administrador</strong><span>Gestión total</span></div>
+              <div class="list-row"><strong>Caja</strong><span>Recepción y pagos</span></div>
+              <div class="list-row"><strong>Cocina</strong><span>Preparación y empaque</span></div>
+              <div class="list-row"><strong>Reparto</strong><span>Ruta y entrega</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="admin-card">
+        <div class="admin-section-title"><div><h3>Pasarelas de pago</h3><p>Métodos habilitados para el checkout.</p></div></div>
+        <div class="payment-list">
+          <div class="list-row"><strong>Pago en línea</strong><span>Activo</span></div>
+          <div class="list-row"><strong>Tarjeta</strong><span>Activo</span></div>
+          <div class="list-row"><strong>Transferencia</strong><span>Configurable</span></div>
+          <div class="list-row"><strong>Pago contraentrega</strong><span>Configurable</span></div>
+        </div>
+      </div>
+
+      <div class="admin-card">
+        <div class="admin-section-title"><div><h3>Zonas de reparto</h3><p>Áreas de cobertura del local.</p></div></div>
+        <div class="stock-list">
+          <div class="list-row"><strong>Zona Centro</strong><span class="stock-badge stock-ok">Activa</span></div>
+          <div class="list-row"><strong>Zona Norte</strong><span class="stock-badge stock-ok">Activa</span></div>
+          <div class="list-row"><strong>Zona Sur</strong><span class="stock-badge stock-low">Capacidad limitada</span></div>
+          <div class="list-row"><strong>Zona Occidente</strong><span class="stock-badge stock-out">No disponible</span></div>
+        </div>
+      </div>
+
+      <div class="admin-card">
+        <div class="admin-section-title"><div><h3>Gestión del menú digital</h3><p>Platillos e ingredientes.</p></div><button class="btn btn-soft" id="addDishBtn"><i data-lucide="plus"></i> Nuevo platillo</button></div>
+        <table class="admin-table">
+          <thead><tr><th>Platillo</th><th>Ingredientes</th><th>Precio</th><th>Estado</th></tr></thead>
+          <tbody>
+            <tr><td>Hamburguesa Max S</td><td>Carne, queso, vegetales</td><td>$39.999</td><td><span class="stock-badge stock-ok">Disponible</span></td></tr>
+            <tr><td>Ensalada</td><td>Lechuga, tomate, parmesano</td><td>$32.999</td><td><span class="stock-badge stock-ok">Disponible</span></td></tr>
+            <tr><td>Papas especiales</td><td>Papa, salsa, toppings</td><td>$15.999</td><td><span class="stock-badge stock-low">Stock bajo</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="admin-card">
+        <div class="admin-section-title"><div><h3>Control del stock</h3><p>Existencias críticas y disponibilidad.</p></div></div>
+        <div class="stock-list">
+          <div class="list-row"><strong>Carne de hamburguesa</strong><span class="stock-badge stock-ok">43 unidades</span></div>
+          <div class="list-row"><strong>Queso cheddar</strong><span class="stock-badge stock-low">7 unidades</span></div>
+          <div class="list-row"><strong>Papas</strong><span class="stock-badge stock-low">9 unidades</span></div>
+          <div class="list-row"><strong>Lechuga</strong><span class="stock-badge stock-out">0 unidades</span></div>
+        </div>
+      </div>
+
+      <div class="admin-card">
+        <div class="admin-section-title"><div><h3>Promociones</h3><p>Ofertas activas y programadas.</p></div><button class="btn btn-soft" id="addPromoBtn"><i data-lucide="plus"></i> Nueva promo</button></div>
+        <div class="promo-list">
+          <div class="list-row"><strong>Combo Flash</strong><span>20% descuento · Activa</span></div>
+          <div class="list-row"><strong>2x1 Bebidas</strong><span>Fin de semana · Programada</span></div>
+          <div class="list-row"><strong>Cliente nuevo</strong><span>$5.000 OFF · Activa</span></div>
+        </div>
+      </div>
+
+      <div class="admin-card" style="grid-column:1/-1">
+        <div class="admin-section-title"><div><h3>Facturación y estadísticas</h3><p>Información para controlar ventas y clientes.</p></div></div>
+        <div class="admin-kpis">
+          <div class="admin-kpi"><strong>$4.8M</strong><span>Ventas del mes</span></div>
+          <div class="admin-kpi"><strong>1.248</strong><span>Pedidos</span></div>
+          <div class="admin-kpi"><strong>842</strong><span>Clientes</span></div>
+          <div class="admin-kpi"><strong>Hamburguesa</strong><span>Platillo popular</span></div>
+          <div class="admin-kpi"><strong>67%</strong><span>Clientes recurrentes</span></div>
+          <div class="admin-kpi"><strong>$38.500</strong><span>Ticket promedio</span></div>
+        </div>
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead><tr><th>Reporte</th><th>Periodo</th><th>Resultado</th><th>Estado</th></tr></thead>
+            <tbody>
+              <tr><td>Ventas</td><td>Últimos 30 días</td><td>$4.800.000</td><td><span class="stock-badge stock-ok">Generado</span></td></tr>
+              <tr><td>Platillos populares</td><td>Mes actual</td><td>Hamburguesa Max S</td><td><span class="stock-badge stock-ok">Actualizado</span></td></tr>
+              <tr><td>Base de clientes</td><td>Histórico</td><td>842 clientes</td><td><span class="stock-badge stock-ok">Disponible</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="admin-card" style="grid-column:1/-1">
+        <div class="admin-section-title"><div><h3>Flujo operativo de un pedido</h3><p>Vista de control desde la compra hasta la entrega.</p></div></div>
+        <div class="flow-grid">
+          <article class="flow-phase">
+            <div class="flow-number">01</div>
+            <h3>Compra · Cliente</h3>
+            <ul class="flow-steps">
+              <li><i data-lucide="check"></i>Selección</li>
+              <li><i data-lucide="check"></i>Checkout</li>
+              <li><i data-lucide="check"></i>Pago</li>
+              <li><i data-lucide="check"></i>Envío</li>
+            </ul>
+          </article>
+          <article class="flow-phase">
+            <div class="flow-number">02</div>
+            <h3>Recepción · Administración/Caja</h3>
+            <ul class="flow-steps">
+              <li><i data-lucide="volume-2"></i>Alerta sonora</li>
+              <li><i data-lucide="shield-check"></i>Validación</li>
+              <li><i data-lucide="check-circle-2"></i>Aceptar pedido</li>
+              <li><i data-lucide="clock-3"></i>Asignar tiempo estimado</li>
+            </ul>
+          </article>
+          <article class="flow-phase">
+            <div class="flow-number">03</div>
+            <h3>Preparación · Cocina</h3>
+            <ul class="flow-steps">
+              <li><i data-lucide="clipboard-list"></i>Comanda</li>
+              <li><i data-lucide="chef-hat"></i>Elaboración</li>
+              <li><i data-lucide="package"></i>Empaque</li>
+            </ul>
+          </article>
+          <article class="flow-phase">
+            <div class="flow-number">04</div>
+            <h3>Despacho · Reparto</h3>
+            <ul class="flow-steps">
+              <li><i data-lucide="user-round-check"></i>Asignación</li>
+              <li><i data-lucide="route"></i>Ruta de envío</li>
+              <li><i data-lucide="map-pin-check"></i>Entrega</li>
+              <li><i data-lucide="circle-check-big"></i>Cierre del ciclo</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer id="footerPublic">
+  <div class="container footer">
+    <div>
+      <div class="logo"><div class="logo-mark"><i data-lucide="zap"></i></div><div>Flash<span>FOOD</span></div></div>
+      <div class="muted">Velocidad que se saborea.</div>
+    </div>
+    <div class="muted">© 2026 FlashFOOD. Todos los derechos reservados.</div>
+  </div>
+</footer>
+
+<!-- CARRITO -->
+<div class="drawer-backdrop" id="backdrop"></div>
+<aside class="drawer" id="drawer" aria-label="Carrito de compras">
+  <div class="drawer-head">
+    <h3>Tu carrito</h3>
+    <button class="close-btn" id="cartClose" aria-label="Cerrar carrito"><i data-lucide="x"></i></button>
+  </div>
+  <div class="cart-items" id="cartItems"></div>
+  <div class="drawer-foot">
+    <div class="total-row"><span>Total</span><span class="total-value" id="cartTotal">$0</span></div>
+    <button class="btn btn-primary checkout" id="checkout">Continuar al pago <i data-lucide="arrow-right"></i></button>
+  </div>
+</aside>
+
+<!-- AUTH MODAL -->
+<div class="modal-backdrop" id="authBackdrop"></div>
+<section class="modal" id="authModal" aria-label="Acceso a FlashFOOD">
+  <div class="modal-head">
+    <div>
+      <strong id="authModalTitle">Mi cuenta</strong>
+      <div class="form-note">Accede o crea tu cuenta FlashFOOD</div>
+    </div>
+    <button class="close-btn" id="authClose"><i data-lucide="x"></i></button>
+  </div>
+
+  <div class="modal-body">
+    <div class="tabs" id="authTabs">
+      <button class="tab active" data-auth-tab="login">Iniciar sesión</button>
+      <button class="tab" data-auth-tab="register">Crear cuenta</button>
+    </div>
+
+    <div id="authForms">
+      <form class="form" id="loginForm">
+        <div class="field"><label for="loginEmail">Correo electrónico</label><input id="loginEmail" type="email" placeholder="correo@ejemplo.com" required></div>
+        <div class="field"><label for="loginPassword">Contraseña</label><input id="loginPassword" type="password" placeholder="••••••••" required></div>
+        <div class="form-message" id="loginMessage"></div>
+        <button class="btn btn-primary" type="submit">Iniciar sesión <i data-lucide="log-in"></i></button>
+        <div class="form-note">Demo de Super Administrador: admin@flashfood.co / FlashAdmin2026*</div>
+      </form>
+
+      <form class="form" id="registerForm" style="display:none">
+        <div class="settings-grid">
+          <div class="field"><label for="registerName">Nombre</label><input id="registerName" required></div>
+          <div class="field"><label for="registerLast">Apellido</label><input id="registerLast" required></div>
+        </div>
+        <div class="field"><label for="registerEmail">Correo electrónico</label><input id="registerEmail" type="email" required></div>
+        <div class="field"><label for="registerPhone">Teléfono</label><input id="registerPhone" required></div>
+        <div class="field"><label for="registerPassword">Contraseña</label><input id="registerPassword" type="password" minlength="6" required></div>
+        <div class="field"><label for="registerConfirm">Confirmar contraseña</label><input id="registerConfirm" type="password" minlength="6" required></div>
+        <div class="form-message" id="registerMessage"></div>
+        <button class="btn btn-primary" type="submit">Crear cuenta <i data-lucide="user-plus"></i></button>
+        <div class="form-note">Este prototipo guarda la cuenta localmente en el navegador mediante localStorage.</div>
+      </form>
+    </div>
+
+    <div class="account-panel" id="accountPanel">
+      <div class="profile-summary">
+        <div class="avatar" id="profileAvatar">F</div>
+        <div><strong id="profileName">Usuario</strong><div class="form-note" id="profileEmail">correo@flashfood.co</div></div>
+      </div>
+
+      <div class="account-menu">
+        <button id="adminAccess"><i data-lucide="shield"></i> Super administrador</button>
+        <button id="accountClosePanel"><i data-lucide="x-circle"></i> Cerrar ventana</button>
+        <button id="logoutBtn" class="btn-danger"><i data-lucide="log-out"></i> Cerrar sesión</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MOBILE MENU -->
+<div class="modal-backdrop" id="mobileBackdrop"></div>
+<section class="modal" id="mobileModal" style="width:min(420px,calc(100% - 28px))">
+  <div class="modal-head">
+    <strong>Menú</strong>
+    <button class="close-btn" id="mobileClose"><i data-lucide="x"></i></button>
+  </div>
+  <div class="modal-body">
+    <div class="account-menu">
+      <button data-mobile="inicio">Inicio</button>
+      <button data-mobile="menu">Menú</button>
+      <button data-mobile="como-funciona">Cómo funciona</button>
+      <button data-mobile="beneficios">Beneficios</button>
+      <button data-mobile="contacto">Contacto</button>
+      <button id="mobileAccount">Mi cuenta</button>
+    </div>
+  </div>
+</section>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   DATOS Y ESTADO
+============================================================ */
+
+const PRODUCTS = [
+  {id:1,name:"Hamburguesa de queso Max S",category:"Comida",price:39999,img:"https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=900&q=80",desc:"Hamburguesa doble con carne, queso cheddar y vegetales frescos."},
+  {id:2,name:"Ensalada con crotones y queso parmesano",category:"Comida",price:32999,img:"https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=900&q=80",desc:"Ensalada fresca con vegetales, queso y crotones."},
+  {id:3,name:"Pollo crocante",category:"Comida",price:27999,img:"https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=900&q=80",desc:"Pollo crujiente acompañado de una porción fresca."},
+  {id:4,name:"Papas especiales",category:"Meriendas",price:15999,img:"https://images.unsplash.com/photo-1573080496219-bb080dd4f877?auto=format&fit=crop&w=900&q=80",desc:"Papas doradas con toppings y salsa especial."},
+  {id:5,name:"Bebida fría",category:"Bebidas",price:7999,img:"https://images.unsplash.com/photo-1544145945-f90425340c7e?auto=format&fit=crop&w=900&q=80",desc:"Bebida refrescante para acompañar tu pedido."},
+  {id:6,name:"Postre de la casa",category:"Meriendas",price:12999,img:"https://images.unsplash.com/photo-1565958011703-44f9829ba187?auto=format&fit=crop&w=900&q=80",desc:"Una opción dulce para cerrar el pedido."}
+];
+
+const DAYS = ["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado","Domingo"];
+
+const DEFAULT_HOURS = DAYS.map(day => ({
+  day, active:true, open:"09:00", close:"21:00"
+}));
+
+const DEFAULT_BUSINESS = {
+  name:"FlashFOOD",
+  phone:"+57 300 000 0000",
+  address:"Avenida Carrera 92 #52A-37",
+  city:"Bogotá",
+  email:"contacto@flashfood.co",
+  description:"Plataforma digital para descubrir, ordenar y disfrutar alimentos."
+};
+
+const ADMIN_EMAIL = "admin@flashfood.co";
+const ADMIN_PASSWORD = "FlashAdmin2026*";
+
+const state = {
+  cart:{},
+  category:"Todos",
+  currentUser:null,
+  adminAuthenticated:false,
+  businessOpen:true,
+  hours: JSON.parse(localStorage.getItem("flashfood_hours") || "null") || DEFAULT_HOURS,
+  business: JSON.parse(localStorage.getItem("flashfood_business") || "null") || DEFAULT_BUSINESS
+};
+
+const money = value => new Intl.NumberFormat("es-CO", {
+  style:"currency", currency:"COP", maximumFractionDigits:0
+}).format(value);
+
+const categories = ["Todos", ...new Set(PRODUCTS.map(p=>p.category))];
+
+function saveState(){
+  localStorage.setItem("flashfood_hours", JSON.stringify(state.hours));
+  localStorage.setItem("flashfood_business", JSON.stringify(state.business));
+}
+
+/* ============================================================
+   UI PRINCIPAL
+============================================================ */
+
+function renderCategories(){
+  const box = document.getElementById("categories");
+  box.innerHTML = categories.map(c =>
+    `<button class="category ${state.category===c?"active":""}" data-category="${c}">${c}</button>`
+  ).join("");
+
+  box.querySelectorAll(".category").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      state.category = btn.dataset.category;
+      renderCategories();
+      renderProducts();
+    });
+  });
+}
+
+function renderProducts(){
+  const grid = document.getElementById("productGrid");
+  const list = state.category==="Todos" ? PRODUCTS : PRODUCTS.filter(p=>p.category===state.category);
+
+  grid.innerHTML = list.map(p => `
+    <article class="product-card">
+      <div class="product-image">
+        <img src="${p.img}" alt="${p.name}" loading="lazy">
+        <span class="badge">${p.category}</span>
+      </div>
+      <div class="product-body">
+        <h3>${p.name}</h3>
+        <p>${p.desc}</p>
+        <div class="product-row">
+          <span class="price">${money(p.price)}</span>
+          <button class="add-btn" data-add="${p.id}">
+            <i data-lucide="plus"></i> Agregar
+          </button>
+        </div>
+      </div>
+    </article>
+  `).join("");
+
+  grid.querySelectorAll("[data-add]").forEach(btn=>{
+    btn.addEventListener("click",()=>addToCart(Number(btn.dataset.add)));
+  });
+  lucide.createIcons();
+}
+
+function addToCart(id){
+  if(!state.businessOpen){
+    showToast("El negocio está cerrado en este momento.");
+    return;
+  }
+  state.cart[id] = (state.cart[id] || 0) + 1;
+  renderCart();
+  openCart();
+}
+
+function changeQty(id, delta){
+  state.cart[id] = (state.cart[id] || 0) + delta;
+  if(state.cart[id] <= 0) delete state.cart[id];
+  renderCart();
+}
+
+function removeFromCart(id){
+  delete state.cart[id];
+  renderCart();
+}
+
+function renderCart(){
+  const items = Object.entries(state.cart);
+  const container = document.getElementById("cartItems");
+  let total = 0, count = 0;
+
+  if(!items.length){
+    container.innerHTML = `<div class="empty"><i data-lucide="shopping-bag"></i><p>Tu carrito está vacío.</p><small>Agrega productos desde el menú.</small></div>`;
+  }else{
+    container.innerHTML = items.map(([id,qty])=>{
+      const p = PRODUCTS.find(x=>x.id===Number(id));
+      const subtotal = p.price * qty;
+      total += subtotal;
+      count += qty;
+
+      return `
+      <div class="cart-item">
+        <img src="${p.img}" alt="${p.name}">
+        <div>
+          <h4>${p.name}</h4>
+          <div class="unit">${money(p.price)} c/u</div>
+          <div class="qty">
+            <button data-minus="${p.id}" aria-label="Disminuir cantidad">−</button>
+            <span>${qty}</span>
+            <button data-plus="${p.id}" aria-label="Aumentar cantidad">+</button>
+          </div>
+          <button class="remove" data-remove="${p.id}">Eliminar</button>
+        </div>
+        <strong>${money(subtotal)}</strong>
+      </div>`;
+    }).join("");
+  }
+
+  document.getElementById("cartCount").textContent = count;
+  document.getElementById("cartTotal").textContent = money(total);
+
+  container.querySelectorAll("[data-minus]").forEach(b=>b.onclick=()=>changeQty(Number(b.dataset.minus),-1));
+  container.querySelectorAll("[data-plus]").forEach(b=>b.onclick=()=>changeQty(Number(b.dataset.plus),1));
+  container.querySelectorAll("[data-remove]").forEach(b=>b.onclick=()=>removeFromCart(Number(b.dataset.remove)));
+  lucide.createIcons();
+}
+
+/* ============================================================
+   CARRITO
+============================================================ */
+
+function openCart(){
+  document.getElementById("drawer").classList.add("open");
+  document.getElementById("backdrop").classList.add("open");
+  document.body.classList.add("locked");
+}
+function closeCart(){
+  document.getElementById("drawer").classList.remove("open");
+  document.getElementById("backdrop").classList.remove("open");
+  document.body.classList.remove("locked");
+}
+document.getElementById("cartOpen").onclick = openCart;
+document.getElementById("cartClose").onclick = closeCart;
+document.getElementById("backdrop").onclick = closeCart;
+
+document.getElementById("checkout").onclick = () => {
+  const count = Number(document.getElementById("cartCount").textContent);
+
+  if(!count){
+    showToast("Agrega al menos un producto al carrito.");
+    return;
+  }
+
+  if(!state.currentUser){
+    closeCart();
+    openAuth("login");
+    setFormMessage("loginMessage","Debes iniciar sesión antes de continuar al pago.","error");
+    return;
+  }
+
+  showToast("Pedido preparado. Aquí puedes conectar tu pantalla real de pago.");
+};
+
+/* ============================================================
+   AUTENTICACIÓN
+============================================================ */
+
+function getUsers(){
+  return JSON.parse(localStorage.getItem("flashfood_users") || "[]");
+}
+
+function saveUsers(users){
+  localStorage.setItem("flashfood_users", JSON.stringify(users));
+}
+
+function openAuth(tab="login"){
+  document.getElementById("authModal").classList.add("open");
+  document.getElementById("authBackdrop").classList.add("open");
+  document.body.classList.add("locked");
+
+  document.getElementById("authTabs").style.display = "grid";
+  document.getElementById("authForms").style.display = "block";
+  document.getElementById("accountPanel").classList.remove("show");
+
+  switchAuthTab(tab);
+}
+
+function closeAuth(){
+  document.getElementById("authModal").classList.remove("open");
+  document.getElementById("authBackdrop").classList.remove("open");
+  document.body.classList.remove("locked");
+  clearMessages();
+}
+
+function switchAuthTab(tab){
+  document.querySelectorAll("[data-auth-tab]").forEach(btn=>{
+    btn.classList.toggle("active", btn.dataset.authTab===tab);
+  });
+
+  document.getElementById("loginForm").style.display = tab==="login" ? "grid" : "none";
+  document.getElementById("registerForm").style.display = tab==="register" ? "grid" : "none";
+  document.getElementById("authModalTitle").textContent = tab==="login" ? "Iniciar sesión" : "Crear cuenta";
+}
+
+function setFormMessage(id,text,type){
+  const el = document.getElementById(id);
+  el.textContent = text;
+  el.className = "form-message " + type;
+}
+function clearMessages(){
+  ["loginMessage","registerMessage"].forEach(id=>{
+    const el=document.getElementById(id);
+    el.textContent="";
+    el.className="form-message";
+  });
+}
+
+document.getElementById("accountOpen").onclick = () => {
+  if(state.currentUser) openAccountPanel();
+  else openAuth("login");
+};
+
+document.getElementById("heroAccount").onclick = () => openAuth("register");
+document.getElementById("authClose").onclick = closeAuth;
+document.getElementById("authBackdrop").onclick = closeAuth;
+
+document.querySelectorAll("[data-auth-tab]").forEach(btn=>{
+  btn.addEventListener("click",()=>switchAuthTab(btn.dataset.authTab));
+});
+
+document.getElementById("loginForm").addEventListener("submit",e=>{
+  e.preventDefault();
+
+  const email = document.getElementById("loginEmail").value.trim().toLowerCase();
+  const password = document.getElementById("loginPassword").value;
+
+  if(email === ADMIN_EMAIL && password === ADMIN_PASSWORD){
+    state.currentUser = {name:"Super Administrador",email:ADMIN_EMAIL,role:"superadmin"};
+    localStorage.setItem("flashfood_session", JSON.stringify(state.currentUser));
+    updateAccountUI();
+    closeAuth();
+    openSuperAdmin();
+    showToast("Sesión de Super Administrador iniciada.");
+    return;
+  }
+
+  const user = getUsers().find(u => u.email.toLowerCase()===email && u.password===password);
+
+  if(!user){
+    setFormMessage("loginMessage","Correo o contraseña incorrectos.","error");
+    return;
+  }
+
+  state.currentUser = user;
+  localStorage.setItem("flashfood_session", JSON.stringify(user));
+  updateAccountUI();
+  closeAuth();
+  showToast("Sesión iniciada correctamente.");
+});
+
+document.getElementById("registerForm").addEventListener("submit",e=>{
+  e.preventDefault();
+
+  const name=document.getElementById("registerName").value.trim();
+  const last=document.getElementById("registerLast").value.trim();
+  const email=document.getElementById("registerEmail").value.trim().toLowerCase();
+  const phone=document.getElementById("registerPhone").value.trim();
+  const password=document.getElementById("registerPassword").value;
+  const confirm=document.getElementById("registerConfirm").value;
+
+  if(password !== confirm){
+    setFormMessage("registerMessage","Las contraseñas no coinciden.","error");
+    return;
+  }
+
+  const users=getUsers();
+
+  if(users.some(u=>u.email.toLowerCase()===email) || email===ADMIN_EMAIL){
+    setFormMessage("registerMessage","Ya existe una cuenta con ese correo.","error");
+    return;
+  }
+
+  const user={
+    id:crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),
+    name:`${name} ${last}`,
+    email,
+    phone,
+    password,
+    role:"cliente"
+  };
+
+  users.push(user);
+  saveUsers(users);
+
+  state.currentUser=user;
+  localStorage.setItem("flashfood_session",JSON.stringify(user));
+  updateAccountUI();
+
+  setFormMessage("registerMessage","Cuenta creada correctamente.","success");
+
+  setTimeout(()=>{
+    closeAuth();
+    showToast("Bienvenido a FlashFOOD.");
+  },700);
+});
+
+function openAccountPanel(){
+  document.getElementById("authModal").classList.add("open");
+  document.getElementById("authBackdrop").classList.add("open");
+  document.body.classList.add("locked");
+  document.getElementById("authTabs").style.display="none";
+  document.getElementById("authForms").style.display="none";
+  document.getElementById("accountPanel").classList.add("show");
+
+  const name=state.currentUser.name || "Usuario";
+  document.getElementById("profileName").textContent=name;
+  document.getElementById("profileEmail").textContent=state.currentUser.email;
+  document.getElementById("profileAvatar").textContent=name.charAt(0).toUpperCase();
+}
+
+document.getElementById("accountClosePanel").onclick=closeAuth;
+
+document.getElementById("logoutBtn").onclick=()=>{
+  state.currentUser=null;
+  localStorage.removeItem("flashfood_session");
+  updateAccountUI();
+  closeAuth();
+  closeSuperAdmin();
+  showToast("Sesión cerrada.");
+};
+
+document.getElementById("adminAccess").onclick=()=>{
+  if(state.currentUser?.role !== "superadmin"){
+    closeAuth();
+    openAuth("login");
+    setFormMessage("loginMessage","El acceso de Super Administrador requiere credenciales administrativas.","error");
+    return;
+  }
+  closeAuth();
+  openSuperAdmin();
+};
+
+function updateAccountUI(){
+  const btn=document.getElementById("accountOpen");
+  const nameEl=document.getElementById("accountName");
+
+  if(state.currentUser){
+    nameEl.textContent=state.currentUser.role==="superadmin" ? "Super Admin" : state.currentUser.name.split(" ")[0];
+    btn.setAttribute("aria-label","Abrir cuenta de "+state.currentUser.name);
+  }else{
+    nameEl.textContent="Ingresar";
+    btn.setAttribute("aria-label","Iniciar sesión");
+  }
+}
+
+function restoreSession(){
+  const raw=localStorage.getItem("flashfood_session");
+  if(raw){
+    try{ state.currentUser=JSON.parse(raw); }catch{ state.currentUser=null; }
+  }
+  updateAccountUI();
+}
+
+/* ============================================================
+   SUPER ADMINISTRADOR
+============================================================ */
+
+function renderHours(){
+  const container=document.getElementById("hoursForm");
+
+  container.innerHTML=state.hours.map((row,index)=>`
+    <div class="hour-row" data-hour="${index}">
+      <label>${row.day}</label>
+      <label class="switch" title="Día activo">
+        <input type="checkbox" class="day-active" ${row.active?"checked":""}>
+        <span class="slider"></span>
+      </label>
+      <input type="time" class="hour-open" value="${row.open}" ${row.active?"":"disabled"}>
+      <input type="time" class="hour-close" value="${row.close}" ${row.active?"":"disabled"}>
+    </div>
+  `).join("");
+
+  container.querySelectorAll(".day-active").forEach(toggle=>{
+    toggle.addEventListener("change",()=>{
+      const row=toggle.closest(".hour-row");
+      row.querySelector(".hour-open").disabled=!toggle.checked;
+      row.querySelector(".hour-close").disabled=!toggle.checked;
+    });
+  });
+}
+
+document.getElementById("saveHours").onclick=()=>{
+  const rows=[...document.querySelectorAll(".hour-row")];
+
+  state.hours=rows.map((row,index)=>({
+    day:DAYS[index],
+    active:row.querySelector(".day-active").checked,
+    open:row.querySelector(".hour-open").value,
+    close:row.querySelector(".hour-close").value
+  }));
+
+  saveState();
+  document.getElementById("controlSchedule").textContent="Actualizado";
+  showToast("Horarios guardados correctamente.");
+};
+
+document.getElementById("businessForm").addEventListener("submit",e=>{
+  e.preventDefault();
+
+  state.business={
+    name:document.getElementById("businessName").value.trim(),
+    phone:document.getElementById("businessPhone").value.trim(),
+    address:document.getElementById("businessAddress").value.trim(),
+    city:document.getElementById("businessCity").value.trim(),
+    email:document.getElementById("businessEmail").value.trim(),
+    description:document.getElementById("businessDescription").value.trim()
+  };
+
+  saveState();
+  renderBusinessPreview();
+  showToast("Datos del local guardados.");
+});
+
+function renderBusinessPreview(){
+  document.getElementById("businessName").value=state.business.name;
+  document.getElementById("businessPhone").value=state.business.phone;
+  document.getElementById("businessAddress").value=state.business.address;
+  document.getElementById("businessCity").value=state.business.city;
+  document.getElementById("businessEmail").value=state.business.email;
+  document.getElementById("businessDescription").value=state.business.description;
+
+  document.getElementById("previewName").textContent=state.business.name;
+  document.getElementById("previewAddress").textContent=state.business.address;
+  document.getElementById("previewCity").textContent=state.business.city;
+  document.getElementById("previewPhone").textContent=state.business.phone;
+  document.getElementById("previewEmail").textContent=state.business.email;
+  document.getElementById("controlBusinessName").textContent=state.business.name;
+}
+
+document.getElementById("toggleBusiness").onclick=()=>{
+  state.businessOpen=!state.businessOpen;
+  updateBusinessStatus();
+  showToast(state.businessOpen ? "Negocio marcado como abierto." : "Negocio marcado como cerrado.");
+};
+
+function updateBusinessStatus(){
+  const el=document.getElementById("businessStatus");
+  el.className="status-pill "+(state.businessOpen?"status-open":"status-closed");
+  el.innerHTML=`<span class="dot"></span> ${state.businessOpen?"Negocio abierto":"Negocio cerrado"}`;
+}
+
+function openSuperAdmin(){
+  if(!state.currentUser || state.currentUser.role!=="superadmin"){
+    openAuth("login");
+    setFormMessage("loginMessage","Acceso restringido al Super Administrador.","error");
+    return;
+  }
+
+  document.getElementById("publicApp").style.display="none";
+  document.getElementById("footerPublic").style.display="none";
+  document.getElementById("superAdminPage").classList.add("active");
+  window.scrollTo({top:0,behavior:"smooth"});
+  renderHours();
+  renderBusinessPreview();
+  updateBusinessStatus();
+  lucide.createIcons();
+}
+
+function closeSuperAdmin(){
+  document.getElementById("superAdminPage").classList.remove("active");
+  document.getElementById("publicApp").style.display="";
+  document.getElementById("footerPublic").style.display="";
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+document.getElementById("returnPublic").onclick=closeSuperAdmin;
+document.getElementById("brandLink").onclick=()=>{
+  if(document.getElementById("superAdminPage").classList.contains("active")){
+    closeSuperAdmin();
+  }
+};
+
+/* ============================================================
+   MOBILE MENU
+============================================================ */
+
+function openMobile(){
+  document.getElementById("mobileModal").classList.add("open");
+  document.getElementById("mobileBackdrop").classList.add("open");
+  document.body.classList.add("locked");
+}
+function closeMobile(){
+  document.getElementById("mobileModal").classList.remove("open");
+  document.getElementById("mobileBackdrop").classList.remove("open");
+  document.body.classList.remove("locked");
+}
+document.getElementById("menuToggle").onclick=openMobile;
+document.getElementById("mobileClose").onclick=closeMobile;
+document.getElementById("mobileBackdrop").onclick=closeMobile;
+
+document.querySelectorAll("[data-mobile]").forEach(btn=>{
+  btn.onclick=()=>{
+    closeMobile();
+    document.getElementById(btn.dataset.mobile)?.scrollIntoView({behavior:"smooth"});
+  };
+});
+document.getElementById("mobileAccount").onclick=()=>{
+  closeMobile();
+  state.currentUser ? openAccountPanel() : openAuth("login");
+};
+
+/* ============================================================
+   NAVBAR
+============================================================ */
+
+window.addEventListener("scroll",()=>{
+  document.getElementById("navbar").classList.toggle("scrolled",window.scrollY>50);
+},{passive:true});
+
+/* ============================================================
+   TOAST
+============================================================ */
+
+let toastTimer;
+function showToast(message){
+  const toast=document.getElementById("toast");
+  toast.textContent=message;
+  toast.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>toast.classList.remove("show"),2400);
+}
+
+/* ============================================================
+   INICIO
+============================================================ */
+
+lucide.createIcons();
+renderCategories();
+renderProducts();
+renderCart();
+renderBusinessPreview();
+updateBusinessStatus();
+restoreSession();
+/* ============================================================
+   FUNCIONES ADMINISTRATIVAS DEMO
+============================================================ */
+document.getElementById("addDishBtn")?.addEventListener("click",()=>{
+  showToast("Formulario de nuevo platillo preparado para integrar con la base de datos.");
+});
+document.getElementById("addPromoBtn")?.addEventListener("click",()=>{
+  showToast("Módulo de promociones listo para conectar con reglas de descuento.");
+});
+
+</script>
+</body>
+</html>
